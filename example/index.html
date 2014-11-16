@@ -1,0 +1,34 @@
+<!doctype html>
+
+<html lang="en" ng-app="example">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="wavesurfer directive example" />
+        <meta name="author" content="Kareem Fikry" />
+        
+        <title>Wavesurfer Directive Example</title>
+        <!-- css files -->
+        <link href="/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+        <link href="/bower_components/bootstrap-material-design/dist/css/ripples.min.css" rel="stylesheet">
+        <link href="/bower_components/bootstrap-material-design/dist/css/material-wfont.min.css" rel="stylesheet">
+        <link href="//fezvrasta.github.io/snackbarjs/dist/snackbar.min.css" rel="stylesheet">
+        
+        <link href="/dist/css/wavesurfer.angular.css" rel="stylesheet">
+        
+        <!-- js files -->
+        <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+        <script type="text/javascript" src="/bower_components/jquery-ui/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="/bower_components/angular/angular.min.js"></script>
+        <script type="text/javascript" src="/bower_components/wavesurfer.js/build/wavesurfer.min.js"></script>
+        <script type="text/javascript" src="/bower_components/underscore/underscore-min.js"></script>
+        
+        <script type="text/javascript" src="/dist/js/wavesurfer-angular.js"></script>
+        
+        <script type="text/javascript" src="/example/app.js"></script>
+    </head>
+    <body>
+        <div ng-controller="wavesurferController">
+            <wavesurfer-angular url="url" options="options"></wavesurfer-angular>
+        </div>
+    </body>
+</html>
