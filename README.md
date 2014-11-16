@@ -2,7 +2,7 @@
 
 AngularJS directive wrap the [wavesurfer.js](http://www.wavesurfer.fm/) plugin to be more flexible to use in AngularJS apps.
 
-This pre-beta release contains some basic functionalities supported in [wavesurfer.js](http://www.wavesurfer.fm/):
+This alpha release contains some basic functionalities supported in [wavesurfer.js](http://www.wavesurfer.fm/):
   - **Play/Pause**
   - **Fast forward/Step backward**
 
