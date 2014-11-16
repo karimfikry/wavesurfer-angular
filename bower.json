@@ -1,10 +1,11 @@
 {
   "name": "wavesurfer-angular",
-  "version": "0.0.0",
+  "version": "1.0.0-beta",
   "homepage": "https://github.com/karimfikry/wavesurfer-angular",
   "description": "Angular.js directive for wavesurfer.fm",
   "main": [
-    "dist/js/wavesurfer-angular.js"
+    "dist/js/wavesurfer-angular.js",
+    "dist/css/wavesurfer.angular.css"
   ],
   "moduleType": [
     "node"
