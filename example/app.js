@@ -8,8 +8,8 @@ app.controller('wavesurferController', ['$scope', function ($scope) {
         progressColor  : '#2A9FD6',
         normalize      : true,
         hideScrollbar  : true,
-        skipLength     : 15,
-        height         : 53,
+        skipLength     : 5,
+        height         : 253,
         cursorColor    : '#2A9FD6'
     };
     

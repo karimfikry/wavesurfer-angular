@@ -17,18 +17,31 @@
         
         <!-- js files -->
         <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
-        <script type="text/javascript" src="/bower_components/jquery-ui/jquery-ui.min.js"></script>
         <script type="text/javascript" src="/bower_components/angular/angular.min.js"></script>
         <script type="text/javascript" src="/bower_components/wavesurfer.js/build/wavesurfer.min.js"></script>
-        <script type="text/javascript" src="/bower_components/underscore/underscore-min.js"></script>
         
         <script type="text/javascript" src="/dist/js/wavesurfer-angular.js"></script>
-        
         <script type="text/javascript" src="/example/app.js"></script>
     </head>
     <body>
         <div ng-controller="wavesurferController">
-            <wavesurfer-angular url="url" options="options"></wavesurfer-angular>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    
+                </div>
+            </div>
+            <wavesurfer-angular url="url" options="options" >
+                <span>{{moment}}</span> / <span>{{length}}</span>
+                <button backward-button><<</button>
+                <button play-button>Play</button>
+                <button forward-button>>></button>
+                <wavesurfer></wavesurfer>
+                <br>
+                <br>
+                <input type="range" style="width: 150px;" volume-level>
+                {{volumeLevel}}
+            </wavesurfer-angular>
         </div>
     </body>
 </html>

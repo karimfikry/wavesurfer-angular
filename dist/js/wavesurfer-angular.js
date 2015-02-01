@@ -1,5 +1,10 @@
 (function () {
     'use strict';
+
+    Object.prototype.extend = function(obj) {
+       for(var i in obj)
+          this[i] = obj[i];
+    };
     
     angular.module('wavesurfer.angular', [])
         .filter('hms', function () {
@@ -18,80 +23,118 @@
                 return time;
             };
         })
-        .directive('wavesurferAngular', function ($interval, $window) {
+        .directive('wavesurfer', function () {
             return {
-                restrict : 'AE',
-                scope    : {
-                    url     : '=',
-                    options : '='
+                restrict: 'EA',
+                template: '<div class="waveform" id="waveform">',
+                require: '^wavesurferAngular',
+                link: function(scope, element, attrs, wavesurferAngularCtrl) {
+                    wavesurferAngularCtrl.init()
+                }
+            }
+        })
+        .directive('playButton', function() {
+            return{
+                restrict: 'A',
+                require: '^wavesurferAngular',
+                link: function(scope, element, attrs, wavesurferAngularCtrl) {
+
+                    element.on('click', wavesurferAngularCtrl.playpause);
+                }
+            }
+        })
+        .directive('backwardButton', function() {
+            return{
+                restrict: 'A',
+                require: '^wavesurferAngular',
+                link: function(scope, element, attrs, wavesurferAngularCtrl) {
+                    element.on('click', wavesurferAngularCtrl.bw);
+                }
+            }
+        })
+        .directive('forwardButton', function() {
+            return{
+                restrict: 'A',
+                require: '^wavesurferAngular',
+                link: function(scope, element, attrs, wavesurferAngularCtrl) {
+                    element.on('click', wavesurferAngularCtrl.ff);
+                }
+            }
+        })
+        .directive('volumeLevel', function($window) {
+            return{
+                restrict: 'A',
+                require: '^wavesurferAngular',
+                link: function(scope, element, attrs, wavesurferAngularCtrl) {
+                    element.val(( $window.sessionStorage.audioLevel || 50));
+
+                    // This could be changed to onchange
+                    element.on('mousemove', function(e) {
+                        wavesurferAngularCtrl.updateVolume(element.val())
+                    });
+                }
+            }
+        })
+        .directive('wavesurferAngular', function($interval, $window, $filter) {
+            return {
+                restrict: 'EA',
+                scope: {
+                    url: '=',
+                    options: '='
                 },
-                template : '<div class="row">' +
-                                '<div class="col-xs-12 wave-control-wrap">' +
-                                    '<button class="bw-btn" ng-click="bw()">' +
-                                    '</button>' +
-                                    '<button ng-class="{\'play-btn\': !playing, \'pause-btn\': playing}" ng-click="playpause()">' +
-                                    '</button>' +
-                                    '<button class="ff-btn" ng-click="ff()">' +
-                                    '</button>' +
-                                    '<span class="sound-duration pull-left">' +
-                                        '<span>{{moment | hms}}</span> / <span>{{length | hms}}</span>' +
-                                    '</span>' +
-                                    '<div class="waveform" id="waveform">' +
-                                    '</div>' +
-                                    '<span ng-class="{\'volume-100\' : volume_level > 50, \'volume-50\' : volume_level > 0 && volume_level <= 50, \'volume-0\' : volume_level === 0}" id="player">' +
-                                        '<span class="audio-volume" id="volume" style="width: 75%">' +
-                                        '</span>' +
-                                    '</span>' +
-                                '</div>' +
-                            '</div>',
-                link : function (scope, element) {
-                    scope.wavesurfer = Object.create(WaveSurfer);
-                    scope.playing    = false;
-                    scope.volume_level = ($window.sessionStorage.audioLevel || 50);
-                    // updating volume slider value
-                    scope.updateSlider = function () {
-                        $("#volume").slider({
-                            min: 0,
-                            max: 100,
-                            value: scope.volume_level,
-                            range: "min",
-                            animate: true,
-                            slide: function(event, ui) {
-                                scope.volume_level = $window.sessionStorage.audioLevel = (ui.value);
-                                scope.wavesurfer.setVolume(scope.volume_level / 100);
-                            }
-                        });
-                    };
-                    // initialize the wavesurfer
-                    scope.options = _.extend({container: document.querySelector('#waveform')}, scope.options);
-                    scope.wavesurfer.init(scope.options);
-                    scope.updateSlider();
-                    scope.wavesurfer.load(scope.url);
-                    scope.moment = "0";
+                transclude: true,
+                template: "<div ng-transclude></div>",
+                controller: function($scope, $element) {
+                    var self = this;
+
+                    this.wavesurfer = Object.create(WaveSurfer);
+                    this.playing    = false;
+
+                    this.updateVolume = function(volumeLevel) {
+                        this.wavesurfer.setVolume(volumeLevel / 100);
+                        $window.sessionStorage.audioLevel = volumeLevel;
+                    }
+
                     // on ready
-                    scope.wavesurfer.on('ready', function () {
-                        scope.length = Math.floor(scope.wavesurfer.getDuration()).toString();
+                    this.wavesurfer.on('ready', function () {
+                        $scope.length = Math.floor(self.wavesurfer.getDuration()).toString();
                         $interval(function () {
-                            scope.moment = Math.floor(scope.wavesurfer.getCurrentTime()).toString();
-                        }, parseFloat(scope.playrate) * 1000); 
+                            $scope.moment = Math.floor(self.wavesurfer.getCurrentTime()).toString();
+                        }, parseFloat($scope.playrate) * 1000); 
                     });
-                    // what to be done on finish playing
-                    scope.wavesurfer.on('finish', function () {
-                        scope.playing = false;
+
+                    // Watch and push to the parent scope to be used there.
+                    $scope.$watchGroup(['moment', 'length'], function(oldValue, newValue, scope) {
+                        $scope.$parent.moment =  $filter('hms')($scope.moment);
+                        $scope.$parent.length =  $filter('hms')($scope.length);
                     });
+
+                    // What to be done on finish playing
+                    this.wavesurfer.on('finish', function () {
+                        this.playing = false;
+                    }.bind(this));
+
+                    this.init = function(options) {
+                        $scope.options = $.extend({container: $element[0].querySelector('#waveform')},$scope.options);
+                        this.wavesurfer.init($scope.options);
+                        this.wavesurfer.load($scope.url);
+
+                        $scope.moment = "0";
+                    };
+
                     // play/pause action
-                    scope.playpause = function () {
-                        scope.wavesurfer.playPause();
-                        scope.playing = !scope.playing;
-                    };
+                    this.playpause = function() {
+                        this.wavesurfer.playPause();
+                        this.playing = !this.playing;
+                    }.bind(this);
                     
-                    scope.ff = function () {
-                        scope.wavesurfer.skipForward();
-                    };
+                    this.ff = function() {
+                        this.wavesurfer.skipForward();
+                    }.bind(this);
                     
-                    scope.bw = function () {
-                        scope.wavesurfer.skipBackward();
-                    };
+                    this.bw = function() {
+                        this.wavesurfer.skipBackward();
+                    }.bind(this);
                 }
             };
         });
