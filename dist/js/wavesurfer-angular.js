@@ -1,11 +1,6 @@
 (function () {
     'use strict';
 
-    Object.prototype.extend = function(obj) {
-       for(var i in obj)
-          this[i] = obj[i];
-    };
-    
     angular.module('wavesurfer.angular', [])
         .filter('hms', function () {
             return function (str) {
