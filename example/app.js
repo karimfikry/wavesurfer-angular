@@ -10,6 +10,7 @@ app.controller('wavesurferController', ['$scope', function ($scope) {
         hideScrollbar  : true,
         skipLength     : 5,
         height         : 253,
+        minPxPerSec    : 250,
         cursorColor    : '#2A9FD6'
     };
     
