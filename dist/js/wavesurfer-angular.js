@@ -66,7 +66,6 @@
                         });
                     };
 
-                    console.log(element.children()[0].children[0].children[4]);
                     var waveform = element.children()[0].children[0].children[4];
 
                     // initialize the wavesurfer
