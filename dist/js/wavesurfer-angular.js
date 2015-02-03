@@ -19,6 +19,7 @@
             };
         })
         .directive('wavesurferAngular', function ($interval, $window) {
+            var uniqueId = 1;
             return {
                 restrict : 'AE',
                 scope    : {
@@ -36,7 +37,7 @@
                                     '<span class="sound-duration pull-left">' +
                                         '<span>{{moment | hms}}</span> / <span>{{length | hms}}</span>' +
                                     '</span>' +
-                                    '<div class="waveform" id="waveform">' +
+                                    '<div class="waveform" id="{{::uniqueId}}">' +
                                     '</div>' +
                                     '<span ng-class="{\'volume-100\' : volume_level > 50, \'volume-50\' : volume_level > 0 && volume_level <= 50, \'volume-0\' : volume_level === 0}" id="player">' +
                                         '<span class="audio-volume" id="volume" style="width: 75%">' +
@@ -45,6 +46,8 @@
                                 '</div>' +
                             '</div>',
                 link : function (scope, element) {
+                    var id = uniqueId++;
+                    scope.uniqueId = 'waveform_' + id;
                     scope.wavesurfer = Object.create(WaveSurfer);
                     scope.playing    = false;
                     scope.volume_level = ($window.sessionStorage.audioLevel || 50);
@@ -62,8 +65,11 @@
                             }
                         });
                     };
+
+                    var waveform = element.children()[0].children[0].children[4];
+
                     // initialize the wavesurfer
-                    scope.options = _.extend({container: document.querySelector('#waveform')}, scope.options);
+                    scope.options = _.extend({container: waveform}, scope.options);
                     scope.wavesurfer.init(scope.options);
                     scope.updateSlider();
                     scope.wavesurfer.load(scope.url);
