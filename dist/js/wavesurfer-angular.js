@@ -22,10 +22,7 @@
             return {
                 restrict: 'EA',
                 template: '<div class="waveform" id="waveform">',
-                require: '^wavesurferAngular',
-                link: function(scope, element, attrs, wavesurferAngularCtrl) {
-                    wavesurferAngularCtrl.init()
-                }
+                require: '^wavesurferAngular'
             }
         })
         .directive('playButton', function() {
@@ -88,7 +85,7 @@
                     this.updateVolume = function(volumeLevel) {
                         this.wavesurfer.setVolume(volumeLevel / 100);
                         $window.sessionStorage.audioLevel = volumeLevel;
-                    }
+                    };
 
                     // on ready
                     this.wavesurfer.on('ready', function () {
@@ -99,7 +96,7 @@
                     });
 
                     // Watch and push to the parent scope to be used there.
-                    $scope.$watchGroup(['moment', 'length'], function(oldValue, newValue, scope) {
+                    $scope.$watchGroup(['moment', 'length'], function(oldValue, newValue) {
                         $scope.$parent.moment =  $filter('hms')($scope.moment);
                         $scope.$parent.length =  $filter('hms')($scope.length);
                     });
@@ -109,7 +106,15 @@
                         this.playing = false;
                     }.bind(this));
 
-                    this.init = function(options) {
+                    // Watch for url changes to init
+                    $scope.$watch('url', function(newValue, oldValue) {
+                        if (typeof newValue !== 'undefined') {
+                            this.init();
+                        }
+                        
+                    }.bind(this), true);
+
+                    this.init = function() {
                         $scope.options = $.extend({container: $element[0].querySelector('#waveform')},$scope.options);
                         this.wavesurfer.init($scope.options);
                         this.wavesurfer.load($scope.url);

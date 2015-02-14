@@ -14,5 +14,6 @@ app.controller('wavesurferController', ['$scope', function ($scope) {
         cursorColor    : '#2A9FD6'
     };
     
-    $scope.url = './example.mp3';
+    $scope.url = 'http://makkah-dl.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/001.mp3';
+
 }]);
